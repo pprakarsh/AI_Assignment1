@@ -80,12 +80,14 @@ class Graph_8puzzle(nx.Graph):
             for node in self.neighbors(current_state[1]):
                 node_gdist =  distance_g[state] + self.get_edge_data(node, current_state[1])['weight']         #g(node) value i.e. present dist from initial state to the node 
                 if (node not in distance_g) or (distance_g[node] > (node_gdist)):
+                    q.put((current_state[0]+1,node))
                     parent[node] = current_state[1]
                     distance_g[node] = node_gdist                                                               #updated g distance 
-                    q.put((current_state[0]+1,node))
-                    f_val = distance_g[node] + self.heuristic(h_fn, node, final_state)
-                    heapq.heappush(pq, (f_val, node))
-                    count = count+1
+
+                    if depth == current_state[0]+1 or node == final_state:
+                        f_val = distance_g[node] + self.heuristic(h_fn, node, final_state)
+                        heapq.heappush(pq, (f_val, node))
+                        count = count+1
         return count
 
 
@@ -124,19 +126,36 @@ class Graph_8puzzle(nx.Graph):
 print("Initial state and Final state have to be entered as a string.\First 3 characters represent first row,\nCharacters at pos 4,5,6 represent elements of second row \nAnd last 3 characters represent last row\n")
 init_state  =     input("Please enter the valid initial state of the Puzzle                 : ")
 final_state =     input("Please enter the valid final state of the Puzzle                   : ")
-
 depth       = int(input("Please enter depth of the bfs expand                               : "))
-h_fn        = int(input("Input 0 for mismatch heuristic and 1 for manhattan heuristic       : "))
 
 
 G = Graph_8puzzle()
 G.add_nodes()
 G.add_edges()
 
+h_fn=0
 parent = {}
 comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
 tot_nodes_gen = comp_cost[0]
 max_len_fringe = comp_cost[1]
+
+print("\n")
+print(f"Computational Costs Mismatch heuristic  :")
+print(f"Total nodes generated     - {tot_nodes_gen}")
+print(f"Maximum length of fringe  - {max_len_fringe}")
+
+
+
+h_fn=1
+parent = {}
+comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
+tot_nodes_gen = comp_cost[0]
+max_len_fringe = comp_cost[1]
+
+print("\n")
+print(f"Computational Costs Manhattan heuristic :")
+print(f"Total nodes generated     - {tot_nodes_gen}")
+print(f"Maximum length of fringe  - {max_len_fringe}")
 
 
 print("\n")
@@ -145,6 +164,8 @@ try:
     expected_path = nx.astar_path(G, init_state, final_state) 
 except:
     exception=1
+
+
 
 if comp_cost[2] == 1: 
     path = []
@@ -163,10 +184,6 @@ else:
         print(f"Expected Path             : {expected_path}\n")
        
 
-print("\n")
-print(f"Computational Costs:")
-print(f"Total nodes generated     - {tot_nodes_gen}")
-print(f"Maximum length of fringe  - {max_len_fringe}")
 
 #print(f"Total number of nodes in graph is {G.number_of_nodes()}")
 

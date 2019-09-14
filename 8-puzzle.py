@@ -36,38 +36,38 @@ class Graph_8puzzle(nx.Graph):
         for node in self.nodes():
             ind = node.find('0',0,8)
             if ind == 0:
-                self.add_edge(node, node[1]+'0'+node[2:], weight=1)
-                self.add_edge(node, node[3]+node[1:3]+'0'+node[4:], weight=1)
+                self.add_edge(node, node[1]+'0'+node[2:])
+                self.add_edge(node, node[3]+node[1:3]+'0'+node[4:])
             elif ind == 1:
-                self.add_edge(node, '0'+node[0]+node[2:], weight=1)
-                self.add_edge(node, node[0]+node[2]+'0'+node[3:], weight=1) 
-                self.add_edge(node, node[0]+node[4]+node[2:4]+'0'+node[5:], weight=1)
+                self.add_edge(node, '0'+node[0]+node[2:])
+                self.add_edge(node, node[0]+node[2]+'0'+node[3:]) 
+                self.add_edge(node, node[0]+node[4]+node[2:4]+'0'+node[5:])
             elif ind == 2:
-                self.add_edge(node, node[0]+'0'+node[1]+node[3:], weight=1)
-                self.add_edge(node, node[0:2]+node[5]+node[3:5]+'0'+node[6:], weight=1)
+                self.add_edge(node, node[0]+'0'+node[1]+node[3:])
+                self.add_edge(node, node[0:2]+node[5]+node[3:5]+'0'+node[6:])
             elif ind == 3:
-                self.add_edge(node, '0'+node[1:3]+node[0]+node[4:], weight=1)
-                self.add_edge(node, node[0:3]+node[4]+'0'+node[5:], weight=1)
-                self.add_edge(node, node[0:3]+node[6]+node[4:6]+'0'+node[7:], weight=1)
+                self.add_edge(node, '0'+node[1:3]+node[0]+node[4:])
+                self.add_edge(node, node[0:3]+node[4]+'0'+node[5:])
+                self.add_edge(node, node[0:3]+node[6]+node[4:6]+'0'+node[7:])
             elif ind == 4:
-                self.add_edge(node, node[0:3]+'0'+node[3]+node[5:], weight=1)
-                self.add_edge(node, node[0]+'0'+node[2:4]+node[1]+node[5:], weight=1)
-                self.add_edge(node, node[0:3]+'0'+node[3]+node[5:], weight=1)
-                self.add_edge(node, node[0:4]+node[7]+node[5:7]+'0'+node[8], weight=1)
+                self.add_edge(node, node[0:3]+'0'+node[3]+node[5:])
+                self.add_edge(node, node[0]+'0'+node[2:4]+node[1]+node[5:])
+                self.add_edge(node, node[0:3]+'0'+node[3]+node[5:])
+                self.add_edge(node, node[0:4]+node[7]+node[5:7]+'0'+node[8])
             elif ind == 5:
-                self.add_edge(node, node[0:2]+'0'+node[3:5]+node[2]+node[6:], weight=1)
-                self.add_edge(node, node[0:4]+'0'+node[4]+node[6:], weight=1)
-                self.add_edge(node, node[0:5]+node[8]+node[6:8]+'0', weight=1)
+                self.add_edge(node, node[0:2]+'0'+node[3:5]+node[2]+node[6:])
+                self.add_edge(node, node[0:4]+'0'+node[4]+node[6:])
+                self.add_edge(node, node[0:5]+node[8]+node[6:8]+'0')
             elif ind == 6:
-                self.add_edge(node, node[0:3]+'0'+node[4:6]+node[3]+ node[7:], weight=1)
-                self.add_edge(node, node[0:6]+node[7]+'0'+node[8], weight=1)
+                self.add_edge(node, node[0:3]+'0'+node[4:6]+node[3]+ node[7:])
+                self.add_edge(node, node[0:6]+node[7]+'0'+node[8])
             elif ind == 7:
-                self.add_edge(node, node[0:4]+'0'+node[5:7]+node[4]+node[8], weight=1)
-                self.add_edge(node, node[0:6]+'0'+node[6]+node[8], weight=1)
-                self.add_edge(node, node[0:7]+node[8]+'0', weight=1)
+                self.add_edge(node, node[0:4]+'0'+node[5:7]+node[4]+node[8])
+                self.add_edge(node, node[0:6]+'0'+node[6]+node[8])
+                self.add_edge(node, node[0:7]+node[8]+'0')
             elif ind == -1:
-                self.add_edge(node, node[0:5]+'0'+node[6:8]+node[5], weight=1)
-                self.add_edge(node, node[0:7]+'0'+node[7], weight=1)
+                self.add_edge(node, node[0:5]+'0'+node[6:8]+node[5])
+                self.add_edge(node, node[0:7]+'0'+node[7])
 
     def expand(self, state, final_state, pq, depth, h_fn, distance_g, parent):
         q = queue.Queue(maxsize=400000)
@@ -78,13 +78,19 @@ class Graph_8puzzle(nx.Graph):
             if depth == current_state[0]:
                 break
             for node in self.neighbors(current_state[1]):
-                node_gdist =  distance_g[state] + self.get_edge_data(node, current_state[1])['weight']         #g(node) value i.e. present dist from initial state to the node 
+                node_gdist =  distance_g[current_state[1]] + 1 
                 if (node not in distance_g) or (distance_g[node] > (node_gdist)):
                     q.put((current_state[0]+1,node))
                     parent[node] = current_state[1]
                     distance_g[node] = node_gdist                                                               #updated g distance 
 
-                    if depth == current_state[0]+1 or node == final_state:
+                    if node == final_state:
+                        f_val = distance_g[node] 
+                        heapq.heappush(pq, (f_val, node))
+                        count = count+1
+                        break
+
+                    if depth == (current_state[0]+1):
                         f_val = distance_g[node] + self.heuristic(h_fn, node, final_state)
                         heapq.heappush(pq, (f_val, node))
                         count = count+1
@@ -133,17 +139,13 @@ G = Graph_8puzzle()
 G.add_nodes()
 G.add_edges()
 
-h_fn=0
-parent = {}
-comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
-tot_nodes_gen = comp_cost[0]
-max_len_fringe = comp_cost[1]
 
 print("\n")
-print(f"Computational Costs Mismatch heuristic  :")
-print(f"Total nodes generated     - {tot_nodes_gen}")
-print(f"Maximum length of fringe  - {max_len_fringe}")
-
+exception=0
+try:
+    expected_path = nx.astar_path(G, init_state, final_state) 
+except:
+    exception=1
 
 
 h_fn=1
@@ -156,16 +158,6 @@ print("\n")
 print(f"Computational Costs Manhattan heuristic :")
 print(f"Total nodes generated     - {tot_nodes_gen}")
 print(f"Maximum length of fringe  - {max_len_fringe}")
-
-
-print("\n")
-exception=0
-try:
-    expected_path = nx.astar_path(G, init_state, final_state) 
-except:
-    exception=1
-
-
 
 if comp_cost[2] == 1: 
     path = []
@@ -182,7 +174,37 @@ else:
     else:
         print(f"Expected path length      : {len(expected_path)-1}")
         print(f"Expected Path             : {expected_path}\n")
-       
+
+
+
+
+
+h_fn=0
+parent = {}
+comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
+tot_nodes_gen = comp_cost[0]
+max_len_fringe = comp_cost[1]
+
+print("\n")
+print(f"Computational Costs Mismatch heuristic  :")
+print(f"Total nodes generated     - {tot_nodes_gen}")
+print(f"Maximum length of fringe  - {max_len_fringe}")
+
+if comp_cost[2] == 1: 
+    path = []
+    G.giveAstarpath(parent, path, final_state)
+    path.reverse()
+    print(f"Length of Path calculated : {len(path)-1}")
+    print(f"Calculated path           : {path}\n")
+    print(f"Expected path length      : {len(expected_path)-1}")
+    print(f"Expected Path             : {expected_path}\n")
+else:
+    print(f"Calculated by custom function that cannot reach goal state")
+    if exception == 1: 
+        print(f"By using built-in function that cannot reach goal state")
+    else:
+        print(f"Expected path length      : {len(expected_path)-1}")
+        print(f"Expected Path             : {expected_path}\n")
 
 
 #print(f"Total number of nodes in graph is {G.number_of_nodes()}")

@@ -21,3 +21,13 @@ optimality.
 5. Compared the computational costs (number of nodes generated and the maximum length of the
 fringe throughout) of all the four calls for the different initial states.
 
+# HOW TO RUN?
+1. Unzip the folder if installing the compressed folder
+2. Run the shell script 'install_pkg_dependencies.sh' to install package dependencies (You would have to give execute permission to the script depending on your system, use chmod +x /path/to/install_pkg_dependencies.sh for Linux distributions)
+3. If for some reason the shell script fails, install the following manually: 
+  a) python3 (using sudo apt-get install python3 for Linux distributions)
+  b) networkx module of python3 (pip3 install networkx should work)
+  c) Run the python file 8-puzzle.py (python3 8-puzzle.py should work)
+  
+  
+

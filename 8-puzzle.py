@@ -83,17 +83,16 @@ class Graph_8puzzle(nx.Graph):
                     q.put((current_state[0]+1,node))
                     parent[node] = current_state[1]
                     distance_g[node] = node_gdist                                                               #updated g distance 
+                    count = count+1
 
                     if node == final_state:
                         f_val = distance_g[node] 
                         heapq.heappush(pq, (f_val, node))
-                        count = count+1
                         break
 
                     if depth == (current_state[0]+1):
                         f_val = distance_g[node] + self.heuristic(h_fn, node, final_state)
                         heapq.heappush(pq, (f_val, node))
-                        count = count+1
         return count
 
 

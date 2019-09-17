@@ -140,20 +140,6 @@ class Graph_8puzzle(nx.Graph):
 
 
 
-<<<<<<< HEAD
-=======
-
-
-
-
-print("\n\n****PROGRAM STARTS****")
-
-print("\nInitial state and Final state have to be entered as a string.\First 3 characters represent first row,\nCharacters at pos 4,5,6 represent elements of second row \nAnd last 3 characters represent last row\n")
-init_state  =     input("Please enter the valid initial state of the Puzzle                 : ")
-final_state =     input("Please enter the valid final state of the Puzzle                   : ")
-depth       = int(input("Please enter depth of the bfs expand                               : "))
->>>>>>> 4076643077d97ab7b0c61a3dbdf07b5d5ca1e077
-
 
 print("\n\n****PROGRAM STARTS****")
 

@@ -2,6 +2,7 @@ import networkx as nx
 from itertools import permutations
 import heapq
 import queue
+import random
 
 
 
@@ -127,148 +128,162 @@ class Graph_8puzzle(nx.Graph):
            path.append(node)
            node = parent[node]
 
+    def genTestcase(self, final_state):
+        node = final_state
+        l = random.randint(1, 100)
+
+        for i in range(l):
+            node = random.choice(list(self.neighbors(node)))
+
+        d = random.randint(1, l)
+        return (node, d)
+
+
+
+
 
 print("\n\n****PROGRAM STARTS****")
-print("\nInitial state and Final state have to be entered as a string.\First 3 characters represent first row,\nCharacters at pos 4,5,6 represent elements of second row \nAnd last 3 characters represent last row\n")
-init_state  =     input("Please enter the valid initial state of the Puzzle                 : ")
-final_state =     input("Please enter the valid final state of the Puzzle                   : ")
-depth       = int(input("Please enter depth of the bfs expand                               : "))
-
 
 G = Graph_8puzzle()
 G.add_nodes()
 G.add_edges()
+final_state = "012345678" 
+
+for i in range(10):
+    print(f"\n\n\nTESTCASE NO. {i}")
+    init_state, depth = G.genTestcase(final_state)
+    print("\n")
+    print(f"Initial state : {init_state}")
+    print(f"Final state   : {final_state} ")
+    print(f"Depth         : {depth}")
+    exception=0
+    try:
+        expected_path = nx.astar_path(G, init_state, final_state) 
+    except:
+        exception=1
 
 
-print("\n")
-exception=0
-try:
-    expected_path = nx.astar_path(G, init_state, final_state) 
-except:
-    exception=1
+    h_fn=1
+    parent = {}
+    comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
+    tot_nodes_gen = comp_cost[0]
+    max_len_fringe = comp_cost[1]
 
+    print("\n")
+    print(f"Computational Costs Manhattan heuristic with depth d:")
+    print(f"Total nodes generated     - {tot_nodes_gen}")
+    print(f"Maximum length of fringe  - {max_len_fringe}")
 
-h_fn=1
-parent = {}
-comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
-tot_nodes_gen = comp_cost[0]
-max_len_fringe = comp_cost[1]
-
-print("\n")
-print(f"Computational Costs Manhattan heuristic with depth d:")
-print(f"Total nodes generated     - {tot_nodes_gen}")
-print(f"Maximum length of fringe  - {max_len_fringe}")
-
-if comp_cost[2] == 1: 
-    path = []
-    G.giveAstarpath(parent, path, final_state)
-    path.reverse()
-    print(f"Length of Path calculated : {len(path)-1}")
-    print(f"Calculated path           : {path}\n")
-    print(f"Expected path length      : {len(expected_path)-1}")
-    print(f"Expected Path             : {expected_path}\n")
-else:
-    print(f"Calculated by custom function that cannot reach goal state")
-    if exception == 1: 
-        print(f"By using built-in function that cannot reach goal state")
-    else:
+    if comp_cost[2] == 1: 
+        path = []
+        G.giveAstarpath(parent, path, final_state)
+        path.reverse()
+        print(f"Length of Path calculated : {len(path)-1}")
+        print(f"Calculated path           : {path}\n")
         print(f"Expected path length      : {len(expected_path)-1}")
         print(f"Expected Path             : {expected_path}\n")
-
-
-
-
-
-h_fn=0
-parent = {}
-comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
-tot_nodes_gen = comp_cost[0]
-max_len_fringe = comp_cost[1]
-
-print("\n")
-print(f"Computational Costs Mismatch heuristic with depth d :")
-print(f"Total nodes generated     - {tot_nodes_gen}")
-print(f"Maximum length of fringe  - {max_len_fringe}")
-
-if comp_cost[2] == 1: 
-    path = []
-    G.giveAstarpath(parent, path, final_state)
-    path.reverse()
-    print(f"Length of Path calculated : {len(path)-1}")
-    print(f"Calculated path           : {path}\n")
-    print(f"Expected path length      : {len(expected_path)-1}")
-    print(f"Expected Path             : {expected_path}\n")
-else:
-    print(f"Calculated by custom function that cannot reach goal state")
-    if exception == 1: 
-        print(f"By using built-in function that cannot reach goal state")
     else:
+        print(f"Calculated by custom function that cannot reach goal state")
+        if exception == 1: 
+            print(f"By using built-in function that cannot reach goal state")
+        else:
+            print(f"Expected path length      : {len(expected_path)-1}")
+            print(f"Expected Path             : {expected_path}\n")
+
+
+
+
+
+    h_fn=0
+    parent = {}
+    comp_cost = G.astar(init_state, final_state, depth, h_fn, parent)
+    tot_nodes_gen = comp_cost[0]
+    max_len_fringe = comp_cost[1]
+
+    print("\n")
+    print(f"Computational Costs Mismatch heuristic with depth d :")
+    print(f"Total nodes generated     - {tot_nodes_gen}")
+    print(f"Maximum length of fringe  - {max_len_fringe}")
+
+    if comp_cost[2] == 1: 
+        path = []
+        G.giveAstarpath(parent, path, final_state)
+        path.reverse()
+        print(f"Length of Path calculated : {len(path)-1}")
+        print(f"Calculated path           : {path}\n")
         print(f"Expected path length      : {len(expected_path)-1}")
         print(f"Expected Path             : {expected_path}\n")
-
-
-h_fn=1
-parent = {}
-comp_cost = G.astar(init_state, final_state, 1, h_fn, parent)
-tot_nodes_gen = comp_cost[0]
-max_len_fringe = comp_cost[1]
-
-print("\n")
-print(f"Computational Costs Manhattan heuristic with depth 1:")
-print(f"Total nodes generated     - {tot_nodes_gen}")
-print(f"Maximum length of fringe  - {max_len_fringe}")
-
-if comp_cost[2] == 1: 
-    path = []
-    G.giveAstarpath(parent, path, final_state)
-    path.reverse()
-    print(f"Length of Path calculated : {len(path)-1}")
-    print(f"Calculated path           : {path}\n")
-    print(f"Expected path length      : {len(expected_path)-1}")
-    print(f"Expected Path             : {expected_path}\n")
-else:
-    print(f"Calculated by custom function that cannot reach goal state")
-    if exception == 1: 
-        print(f"By using built-in function that cannot reach goal state")
     else:
+        print(f"Calculated by custom function that cannot reach goal state")
+        if exception == 1: 
+            print(f"By using built-in function that cannot reach goal state")
+        else:
+            print(f"Expected path length      : {len(expected_path)-1}")
+            print(f"Expected Path             : {expected_path}\n")
+
+
+    h_fn=1
+    parent = {}
+    comp_cost = G.astar(init_state, final_state, 1, h_fn, parent)
+    tot_nodes_gen = comp_cost[0]
+    max_len_fringe = comp_cost[1]
+
+    print("\n")
+    print(f"Computational Costs Manhattan heuristic with depth 1:")
+    print(f"Total nodes generated     - {tot_nodes_gen}")
+    print(f"Maximum length of fringe  - {max_len_fringe}")
+
+    if comp_cost[2] == 1: 
+        path = []
+        G.giveAstarpath(parent, path, final_state)
+        path.reverse()
+        print(f"Length of Path calculated : {len(path)-1}")
+        print(f"Calculated path           : {path}\n")
         print(f"Expected path length      : {len(expected_path)-1}")
         print(f"Expected Path             : {expected_path}\n")
-
-
-
-
-
-h_fn=0
-parent = {}
-comp_cost = G.astar(init_state, final_state, 1, h_fn, parent)
-tot_nodes_gen = comp_cost[0]
-max_len_fringe = comp_cost[1]
-
-print("\n")
-print(f"Computational Costs Mismatch heuristic with depth 1 :")
-print(f"Total nodes generated     - {tot_nodes_gen}")
-print(f"Maximum length of fringe  - {max_len_fringe}")
-
-if comp_cost[2] == 1: 
-    path = []
-    G.giveAstarpath(parent, path, final_state)
-    path.reverse()
-    print(f"Length of Path calculated : {len(path)-1}")
-    print(f"Calculated path           : {path}\n")
-    print(f"Expected path length      : {len(expected_path)-1}")
-    print(f"Expected Path             : {expected_path}\n")
-else:
-    print(f"Calculated by custom function that cannot reach goal state")
-    if exception == 1: 
-        print(f"By using built-in function that cannot reach goal state")
     else:
+        print(f"Calculated by custom function that cannot reach goal state")
+        if exception == 1: 
+            print(f"By using built-in function that cannot reach goal state")
+        else:
+            print(f"Expected path length      : {len(expected_path)-1}")
+            print(f"Expected Path             : {expected_path}\n")
+
+
+
+
+
+    h_fn=0
+    parent = {}
+    comp_cost = G.astar(init_state, final_state, 1, h_fn, parent)
+    tot_nodes_gen = comp_cost[0]
+    max_len_fringe = comp_cost[1]
+
+    print("\n")
+    print(f"Computational Costs Mismatch heuristic with depth 1 :")
+    print(f"Total nodes generated     - {tot_nodes_gen}")
+    print(f"Maximum length of fringe  - {max_len_fringe}")
+
+    if comp_cost[2] == 1: 
+        path = []
+        G.giveAstarpath(parent, path, final_state)
+        path.reverse()
+        print(f"Length of Path calculated : {len(path)-1}")
+        print(f"Calculated path           : {path}\n")
         print(f"Expected path length      : {len(expected_path)-1}")
         print(f"Expected Path             : {expected_path}\n")
+    else:
+        print(f"Calculated by custom function that cannot reach goal state")
+        if exception == 1: 
+            print(f"By using built-in function that cannot reach goal state")
+        else:
+            print(f"Expected path length      : {len(expected_path)-1}")
+            print(f"Expected Path             : {expected_path}\n")
 
-#print(f"Total number of nodes in graph is {G.number_of_nodes()}")
+    #print(f"Total number of nodes in graph is {G.number_of_nodes()}")
 
-#for edge in G.edges():
-#    print(f"{edge} {len(edge[0])} {len(edge[1])}")
+    #for edge in G.edges():
+    #    print(f"{edge} {len(edge[0])} {len(edge[1])}")
 
-#print(f"Total number of edges present in Graph is {G.number_of_edges()}")
+    #print(f"Total number of edges present in Graph is {G.number_of_edges()}")
 
